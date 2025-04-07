@@ -23,7 +23,7 @@ POST http://localhost:7070/api/auth/login
 
 ### Populate data
 POST localhost:7070/api/skilessons/populate
-#Authorization: Bearer {{token}}
+Authorization: Bearer {{token}}
 
 ### Get all skilessons
 GET localhost:7070/api/skilessons
