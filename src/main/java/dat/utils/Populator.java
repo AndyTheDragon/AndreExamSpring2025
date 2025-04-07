@@ -86,11 +86,11 @@ public class Populator
 
             em.persist(instructor1);
             em.persist(instructor2);
-            instructor1.addTrip(skiLesson1);
-            instructor1.addTrip(skiLesson2);
-            instructor1.addTrip(skiLesson3);
-            instructor2.addTrip(skiLesson4);
-            instructor2.addTrip(skiLesson5);
+            instructor1.addLesson(skiLesson1);
+            instructor1.addLesson(skiLesson2);
+            instructor1.addLesson(skiLesson3);
+            instructor2.addLesson(skiLesson4);
+            instructor2.addLesson(skiLesson5);
             em.persist(skiLesson1);
             em.persist(skiLesson2);
             em.persist(skiLesson3);

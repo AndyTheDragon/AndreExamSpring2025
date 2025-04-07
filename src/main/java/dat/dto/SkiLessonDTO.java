@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +35,21 @@ public class SkiLessonDTO
         this.endTime = entity.getEndTime().toString();
         this.location = new PositionDTO(entity.getLocation().getDescription(), entity.getLocation().getLatitude(), entity.getLocation().getLongitude());
         this.instructor = entity.getInstructor()==null ? null : new InstructorDTO(entity.getInstructor());
+    }
+
+    public SkiLesson toEntity()
+    {
+        SkiLesson entity = new SkiLesson(
+                this.id,
+                this.name,
+                this.price,
+                this.level,
+                LocalTime.parse(this.startTime),
+                LocalTime.parse(this.endTime),
+                new SkiLesson.Position(this.location.getDescription(), this.location.getLatitude(), this.location.getLongitude()),
+                null // instructor will be set later
+        );
+        return entity;
     }
 
 }

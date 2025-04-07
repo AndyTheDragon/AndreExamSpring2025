@@ -39,7 +39,7 @@ public class Instructor
     }
 
 
-    public void addTrip(SkiLesson skiLesson)
+    public void addLesson(SkiLesson skiLesson)
     {
         if (skiLesson != null)
         {
@@ -48,7 +48,7 @@ public class Instructor
         }
     }
 
-    public void removeTrip(SkiLesson skiLesson)
+    public void removeLesson(SkiLesson skiLesson)
     {
         if (skiLesson != null)
         {
