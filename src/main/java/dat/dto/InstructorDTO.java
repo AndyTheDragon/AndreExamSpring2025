@@ -1,6 +1,7 @@
 package dat.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dat.entities.Instructor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InstructorDTO
 {
     private Integer id;

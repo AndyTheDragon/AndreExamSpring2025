@@ -67,5 +67,9 @@ Content-Type: "application/json"
 DELETE localhost:7070/api/skilessons/1
 Authorization: Bearer {{token}}
 
+### Get skilesson filtered by level
+GET localhost:7070/api/skilessons/level/adVancEd
+Authorization: Bearer {{token}}
+
 ### Get skiLesson with Items
 GET localhost:7070/api/skilessons/1/?withItems=true

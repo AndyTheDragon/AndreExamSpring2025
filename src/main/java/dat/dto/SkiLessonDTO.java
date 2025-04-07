@@ -1,6 +1,7 @@
 package dat.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dat.entities.SkiLesson;
 import dat.enums.LessonLevel;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SkiLessonDTO
 {
     private Integer id;
@@ -22,6 +24,7 @@ public class SkiLessonDTO
     private LessonLevel level;
     private String startTime;
     private String endTime;
+
     private PositionDTO location;
     private InstructorDTO instructor;
 

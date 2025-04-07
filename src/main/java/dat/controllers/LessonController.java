@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -64,7 +65,7 @@ public class LessonController
         } catch (DaoException e)
         {
             logger.error("Error fetching lesson. ", e);
-            throw new ApiException(404, "Trip not found", e);
+            throw new ApiException(404, "Lesson not found", e);
         }
     }
 

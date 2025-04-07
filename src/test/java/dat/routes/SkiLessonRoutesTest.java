@@ -3,10 +3,10 @@ package dat.routes;
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
 import dat.controllers.SecurityController;
-import dat.controllers.TripController;
-import dat.entities.Guide;
-import dat.entities.Trip;
-import dat.enums.TripCategory;
+import dat.controllers.LessonController;
+import dat.entities.Instructor;
+import dat.entities.SkiLesson;
+import dat.enums.LessonLevel;
 import dat.utils.Populator;
 import io.restassured.RestAssured;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,33 +16,34 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
-class TripRoutesTest
+class SkiLessonRoutesTest
 {
 
     private static final EntityManagerFactory emf = HibernateConfig.getEntityManagerFactoryForTest();
     final ObjectMapper objectMapper = new ObjectMapper();
-    Guide g1, g2;
-    Trip t1, t2, t3, t4, t5;
-    final Logger logger = LoggerFactory.getLogger(TripRoutesTest.class.getName());
+    Instructor g1, g2;
+    SkiLesson l1, l2, l3, l4, l5;
+    final Logger logger = LoggerFactory.getLogger(SkiLessonRoutesTest.class.getName());
 
 
     @BeforeAll
     static void setUpAll()
     {
-        TripController tripController = new TripController(emf);
+        LessonController lessonController = new LessonController(emf);
         SecurityController securityController = new SecurityController(emf);
-        Routes routes = new Routes(tripController, securityController);
+        Routes routes = new Routes(lessonController, securityController);
         ApplicationConfig
                 .getInstance()
                 .initiateServer()
                 .setRoute(routes.getRoutes())
                 .handleException()
                 .setApiExceptionHandling()
-                .checkSecurityRoles()
+                //.checkSecurityRoles()
                 .startServer(7078);
         RestAssured.baseURI = "http://localhost:7078/api";
     }
@@ -52,13 +53,13 @@ class TripRoutesTest
     {
         Populator populator = new Populator();
         populator.populate(emf);
-        g1 = populator.getGuides().get(0);
-        g2 = populator.getGuides().get(1);
-        t1 = populator.getTrips().get(0);
-        t2 = populator.getTrips().get(1);
-        t3 = populator.getTrips().get(2);
-        t4 = populator.getTrips().get(3);
-        t5 = populator.getTrips().get(4);
+        g1 = populator.getInstructors().get(0);
+        g2 = populator.getInstructors().get(1);
+        l1 = populator.getLessons().get(0);
+        l2 = populator.getLessons().get(1);
+        l3 = populator.getLessons().get(2);
+        l4 = populator.getLessons().get(3);
+        l5 = populator.getLessons().get(4);
 
     }
 
@@ -67,10 +68,17 @@ class TripRoutesTest
     {
         given()
                 .when()
-                .get("/trips")
+                .get("/skilessons")
                 .then()
                 .statusCode(200)
-                .body("size()", equalTo(5));
+                .body("size()", equalTo(5))
+                .body("name", hasItem(l1.getName()))
+                .body("name", hasItem(l2.getName()))
+                .body("name", hasItem(l3.getName()))
+                .body("name", hasItem(l4.getName()))
+                .body("name", hasItem(l5.getName()))
+                .body("instructor.firstName", hasItem(g1.getFirstName()))
+                .body("instructor.firstName", hasItem(g2.getFirstName()));
     }
 
     @Test
@@ -78,22 +86,21 @@ class TripRoutesTest
     {
         given()
                 .when()
-                .get("/trips/" + t2.getId())
+                .get("/skilessons/" + l2.getId())
                 .then()
                 .statusCode(200)
-                .body("name", equalTo(t2.getName()));
+                .body("name", equalTo(l2.getName()));
     }
 
     @Test
-    void getById_includeItems()
+    void getById_NotFound()
     {
         given()
                 .when()
-                .get("/trips/" + t2.getId() + "?withItems=true")
+                .get("/skilessons/999")
                 .then()
-                .statusCode(200)
-                .body("name", equalTo(t2.getName()))
-                .body("items.size()", equalTo(7));
+                .statusCode(404)
+                .body("message", equalTo("Lesson not found"));
     }
 
     @Test
@@ -101,27 +108,27 @@ class TripRoutesTest
     {
         try
         {
-            ObjectNode startPositionJson = objectMapper.createObjectNode()
+            ObjectNode locationJson = objectMapper.createObjectNode()
                     .put("description", "Amager Standpark")
                     .put("latitude", 55.6052)
                     .put("longitude", 12.5702);
             String json = objectMapper.createObjectNode().put("name", "Beach Party")
                     .put("price", 100.0)
-                    .put("category", "BEACH")
+                    .put("level", "ADVANCED")
                     .put("startTime", "13:00")
                     .put("endTime", "15:00")
-                    .set("startPosition", startPositionJson)
+                    .set("location", locationJson)
                     .toString();
             given().when()
                     .contentType("application/json")
                     .accept("application/json")
                     .body(json)
-                    .post("/trips")
+                    .post("/skilessons")
                     .then()
                     .statusCode(201);
         } catch (Exception e)
         {
-            logger.error("Error creating trip", e);
+            logger.error("Error creating lesson", e);
 
             fail();
         }
@@ -134,7 +141,7 @@ class TripRoutesTest
         {
             String json = objectMapper.createObjectNode().put("name", "New entity2")
                     .put("price", 100.0)
-                    .put("category", TripCategory.BEACH.toString())
+                    .put("level", LessonLevel.ADVANCED.toString())
                     .put("startTime", "13:00")
                     .put("endTime", "15:00")
                     .toString();
@@ -142,13 +149,13 @@ class TripRoutesTest
                     .contentType("application/json")
                     .accept("application/json")
                     .body(json)
-                    .put("/trips/" + t1.getId()) // double check id
+                    .put("/skilessons/" + l1.getId()) // double check id
                     .then()
                     .statusCode(200)
                     .body("name", equalTo("New entity2"));
         } catch (Exception e)
         {
-            logger.error("Error updating trip", e);
+            logger.error("Error updating lesson", e);
             fail();
         }
     }
@@ -157,7 +164,7 @@ class TripRoutesTest
     void delete()
     {
         given().when()
-                .delete("/trips/" + t1.getId())
+                .delete("/skilessons/" + l1.getId())
                 .then()
                 .statusCode(204);
     }

@@ -3,6 +3,7 @@ package dat.dao;
 import dat.dto.SkiLessonDTO;
 import dat.entities.Instructor;
 import dat.entities.SkiLesson;
+import dat.enums.LessonLevel;
 import dat.exceptions.DaoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -153,8 +154,8 @@ public class SkiLessonDAO extends GenericDAO implements ISkiLessonInstructorDAO
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            List<SkiLesson> skiLessons = em.createQuery("SELECT t FROM SkiLesson t WHERE t.level = :category", SkiLesson.class)
-                    .setParameter("category", level.toUpperCase())
+            List<SkiLesson> skiLessons = em.createQuery("SELECT t FROM SkiLesson t WHERE t.level = :lessonlevel", SkiLesson.class)
+                    .setParameter("lessonlevel", LessonLevel.valueOf(level.toUpperCase()))
                     .getResultList();
             return skiLessons.stream().map(SkiLessonDTO::new).toList();
         }

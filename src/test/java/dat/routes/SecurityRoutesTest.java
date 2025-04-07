@@ -3,7 +3,7 @@ package dat.routes;
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
 import dat.controllers.SecurityController;
-import dat.controllers.TripController;
+import dat.controllers.LessonController;
 import dat.entities.UserAccount;
 import dat.enums.Roles;
 import io.restassured.RestAssured;
@@ -34,9 +34,9 @@ class SecurityRoutesTest
 
     @BeforeAll
     static void setUpAll() {
-        TripController tripController = new TripController(emf);
+        LessonController lessonController = new LessonController(emf);
         SecurityController securityController = new SecurityController(emf);
-        Routes routes = new Routes(tripController, securityController);
+        Routes routes = new Routes(lessonController, securityController);
         ApplicationConfig
                 .getInstance()
                 .initiateServer()
