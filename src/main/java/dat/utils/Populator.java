@@ -1,8 +1,8 @@
 package dat.utils;
 
-import dat.entities.Guide;
-import dat.entities.Trip;
-import dat.enums.TripCategory;
+import dat.entities.Instructor;
+import dat.entities.SkiLesson;
+import dat.enums.LessonLevel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.slf4j.Logger;
@@ -16,64 +16,64 @@ public class Populator
 {
     private Logger logger = LoggerFactory.getLogger(Populator.class);
 
-    private Guide guide1, guide2;
-    private Trip trip1, trip2, trip3, trip4, trip5;
+    private Instructor instructor1, instructor2;
+    private SkiLesson skiLesson1, skiLesson2, skiLesson3, skiLesson4, skiLesson5;
 
     public Populator()
     {
-        guide1 = new Guide(null,
+        instructor1 = new Instructor(null,
                 "Jesper",
                 "Jesperson",
                 "jesper@cph.dk",
                 "44554455",
                 12, new HashSet<>());
-        guide2 = new Guide(null,
+        instructor2 = new Instructor(null,
                 "Jon",
                 "",
                 "jon@cph.dk",
                 "22332233",
                 15, new HashSet<>());
-        trip1 = new Trip("Trip to the mountains",
+        skiLesson1 = new SkiLesson("Trip to the mountains",
                 600.0,
-                TripCategory.FOREST,
+                LessonLevel.INTERMEDIATE,
                 LocalTime.of(8,0),
                 LocalTime.of(19,30),
-                new Trip.Position("Copenhagen", 55.6761, 12.5683));
-        trip2 = new Trip("Trip to the beach",
+                new SkiLesson.Position("Copenhagen", 55.6761, 12.5683));
+        skiLesson2 = new SkiLesson("Trip to the beach",
                 300.0,
-                TripCategory.BEACH,
+                LessonLevel.BEGINNER,
                 LocalTime.of(9,0),
                 LocalTime.of(18,0),
-                new Trip.Position("Copenhagen", 55.6761, 12.5683));
-        trip3 = new Trip("Trip to the city",
+                new SkiLesson.Position("Copenhagen", 55.6761, 12.5683));
+        skiLesson3 = new SkiLesson("Trip to the city",
                 200.0,
-                TripCategory.CITY,
+                LessonLevel.INTERMEDIATE,
                 LocalTime.of(10,0),
                 LocalTime.of(17,0),
-                new Trip.Position("Copenhagen", 55.6761, 12.5683));
-        trip4 = new Trip("Trip to Silkeborgsøerne",
+                new SkiLesson.Position("Copenhagen", 55.6761, 12.5683));
+        skiLesson4 = new SkiLesson("Trip to Silkeborgsøerne",
                 400.0,
-                TripCategory.LAKE,
+                LessonLevel.ADVANCED,
                 LocalTime.of(6,43),
                 LocalTime.of(17,03),
-                new Trip.Position("Silkeborg", 56.1629, 9.5459));
-        trip5 = new Trip("Trip to the mountains",
+                new SkiLesson.Position("Silkeborg", 56.1629, 9.5459));
+        skiLesson5 = new SkiLesson("Trip to the mountains",
                 1600.0,
-                TripCategory.SNOW,
+                LessonLevel.BEGINNER,
                 LocalTime.of(5,15),
                 LocalTime.of(21,30),
-                new Trip.Position("Amager Bakke", 55.6759, 12.5655));
+                new SkiLesson.Position("Amager Bakke", 55.6759, 12.5655));
 
     }
 
-    public List<Guide> getGuides()
+    public List<Instructor> getGuides()
     {
-        return List.of(guide1, guide2);
+        return List.of(instructor1, instructor2);
     }
 
-    public List<Trip> getTrips()
+    public List<SkiLesson> getTrips()
     {
-        return List.of(trip1, trip2, trip3, trip4, trip5);
+        return List.of(skiLesson1, skiLesson2, skiLesson3, skiLesson4, skiLesson5);
     }
 
     public void populate(EntityManagerFactory emf)
@@ -81,23 +81,23 @@ public class Populator
         try (EntityManager em = emf.createEntityManager())
         {
             em.getTransaction().begin();
-            em.createQuery("DELETE FROM Trip ").executeUpdate();
-            em.createQuery("DELETE FROM Guide ").executeUpdate();
+            em.createQuery("DELETE FROM SkiLesson ").executeUpdate();
+            em.createQuery("DELETE FROM Instructor ").executeUpdate();
 
-            em.persist(guide1);
-            em.persist(guide2);
-            guide1.addTrip(trip1);
-            guide1.addTrip(trip2);
-            guide1.addTrip(trip3);
-            guide2.addTrip(trip4);
-            guide2.addTrip(trip5);
-            em.persist(trip1);
-            em.persist(trip2);
-            em.persist(trip3);
-            em.persist(trip4);
-            em.persist(trip5);
-            guide1 = em.merge(guide1);
-            guide2 = em.merge(guide2);
+            em.persist(instructor1);
+            em.persist(instructor2);
+            instructor1.addTrip(skiLesson1);
+            instructor1.addTrip(skiLesson2);
+            instructor1.addTrip(skiLesson3);
+            instructor2.addTrip(skiLesson4);
+            instructor2.addTrip(skiLesson5);
+            em.persist(skiLesson1);
+            em.persist(skiLesson2);
+            em.persist(skiLesson3);
+            em.persist(skiLesson4);
+            em.persist(skiLesson5);
+            instructor1 = em.merge(instructor1);
+            instructor2 = em.merge(instructor2);
 
             em.getTransaction().commit();
         }

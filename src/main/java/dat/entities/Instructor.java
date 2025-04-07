@@ -1,7 +1,7 @@
 package dat.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import dat.dto.GuideDTO;
+import dat.dto.InstructorDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,22 +14,22 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Guide
+public class Instructor
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
     private Integer yearsOfExperience;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guide")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "instructor")
     @JsonBackReference
     @ToString.Exclude
-    private Set<Trip> trips = new HashSet<>();
+    private Set<SkiLesson> skiLessons = new HashSet<>();
 
-    public Guide(GuideDTO guide)
+    public Instructor(InstructorDTO guide)
     {
         this.firstName = guide.getFirstName();
         this.lastName = guide.getLastName();
@@ -39,21 +39,21 @@ public class Guide
     }
 
 
-    public void addTrip(Trip trip)
+    public void addTrip(SkiLesson skiLesson)
     {
-        if (trip != null)
+        if (skiLesson != null)
         {
-            trips.add(trip);
-            trip.setGuide(this);
+            skiLessons.add(skiLesson);
+            skiLesson.setInstructor(this);
         }
     }
 
-    public void removeTrip(Trip trip)
+    public void removeTrip(SkiLesson skiLesson)
     {
-        if (trip != null)
+        if (skiLesson != null)
         {
-            trips.remove(trip);
-            trip.setGuide(null);
+            skiLessons.remove(skiLesson);
+            skiLesson.setInstructor(null);
         }
     }
 

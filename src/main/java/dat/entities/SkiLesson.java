@@ -1,9 +1,8 @@
 package dat.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import dat.dto.TripDTO;
 import dat.dto.TripInputDTO;
-import dat.enums.TripCategory;
+import dat.enums.LessonLevel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Trip
+public class SkiLesson
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,38 +23,38 @@ public class Trip
     @Setter
     private Double price;
     @Setter
-    private TripCategory category;
+    private LessonLevel level;
     @Setter
     private LocalTime startTime;
     @Setter
     private LocalTime endTime;
     @Embedded
     @ToString.Exclude
-    private Position startPosition;
+    private Position location;
     @Setter
     @ManyToOne
-    @JoinColumn(name = "guide_id")
+    @JoinColumn(name = "instructor_id")
     @JsonManagedReference
-    private Guide guide;
+    private Instructor instructor;
 
-    public Trip(String name, Double price, TripCategory category, LocalTime startTime, LocalTime endTime, Position startPosition)
+    public SkiLesson(String name, Double price, LessonLevel level, LocalTime startTime, LocalTime endTime, Position location)
     {
         this.name = name;
         this.price = price;
-        this.category = category;
+        this.level = level;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.startPosition = startPosition;
+        this.location = location;
     }
 
-    public Trip(TripInputDTO trip)
+    public SkiLesson(TripInputDTO trip)
     {
         this.name = trip.getName();
         this.price = trip.getPrice();
-        this.category = trip.getCategory();
+        this.level = trip.getCategory();
         this.startTime = LocalTime.parse(trip.getStartTime());
         this.endTime = LocalTime.parse(trip.getEndTime());
-        this.startPosition = new Position(trip.getStartPosition().getDescription(), trip.getStartPosition().getLatitude(), trip.getStartPosition().getLongitude());
+        this.location = new Position(trip.getStartPosition().getDescription(), trip.getStartPosition().getLatitude(), trip.getStartPosition().getLongitude());
     }
 
 
@@ -65,7 +64,6 @@ public class Trip
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    @EqualsAndHashCode
     public static class Position {
         private String description;
         private double latitude;

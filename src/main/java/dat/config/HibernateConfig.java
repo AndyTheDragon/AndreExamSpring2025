@@ -41,8 +41,8 @@ public class HibernateConfig
 
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
-        configuration.addAnnotatedClass(Guide.class);
-        configuration.addAnnotatedClass(Trip.class);
+        configuration.addAnnotatedClass(Instructor.class);
+        configuration.addAnnotatedClass(SkiLesson.class);
         configuration.addAnnotatedClass(UserAccount.class);
         configuration.addAnnotatedClass(Roles.class);
     }
