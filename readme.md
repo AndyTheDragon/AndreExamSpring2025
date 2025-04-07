@@ -45,8 +45,14 @@ The application provides the following main endpoints:
     - PUT `/api/skilessons/{lessonId}/instructors/{instructorId}`: Add an instructor to a ski lesson
     - POST `/api/skilessons/populate`: Populate the database with ski lessons
 
+I use PUT for adding an instructor to a ski lesson, as it is idempotent and can be used to update the relationship between the lesson and instructor. I would prefer a PATCH, since I only update part of the resource, but the exam tells me to use PUT.
+
 - **Instructors**:
     - GET `/api/instructors/{id}/skilessons`: Get ski lessons by instructor
+    - GET `/api/instructors/{id}/totalsumprice`: Get the total sum price of lessons by instructor
+    - GET `/api/instructors/totalsumprice`: Get the total sum price of all lessons
+    - GET `/api/instructors/{id}/totalsumduration`: Get the sum of lesson times by instructor
+    - GET `/api/instructors/totalsumduration`: Get the sum of all lesson times
 
 - **Security**:
     - GET `/api/auth/test`: Test endpoint
