@@ -33,11 +33,11 @@ public class Routes
     private EndpointGroup instructorRoutes()
     {
         return () -> {
-            get("/{id}/skilessons", lessonController::getLessonsByInstructor);
-            get("/{id}/totalsumprice", lessonController::getTotalSumPriceOfLessonsByInstructor);
-            get("/totalsumprice", lessonController::getTotalSumPriceOfLessons);
-            get("/{id}/totalsumduration", lessonController::getSumOfLessonTimesByInstructor);
-            get("/totalsumduration", lessonController::getSumOfLessonTimes);
+            get("/{id}/skilessons", lessonController::getLessonsByInstructor, Roles.USER);
+            get("/{id}/totalsumprice", lessonController::getTotalSumPriceOfLessonsByInstructor, Roles.USER);
+            get("/totalsumprice", lessonController::getTotalSumPriceOfLessons, Roles.USER);
+            get("/{id}/totalsumduration", lessonController::getSumOfLessonTimesByInstructor, Roles.USER);
+            get("/totalsumduration", lessonController::getSumOfLessonTimes, Roles.USER);
         };
     }
 
@@ -47,11 +47,11 @@ public class Routes
             get(lessonController::getAllLessons);
             get("/level/{level}", lessonController::getLessonsByLevel);
             get("/{id}", lessonController::getLessonById);
-            post(lessonController::createLesson);
-            put("/{id}", lessonController::updateLesson);
-            delete("/{id}", lessonController::deleteLesson);
-            put("/{lessonId}/instructors/{instructorId}", lessonController::addInstructorToLesson);
-            post("/populate", lessonController::populate);
+            post(lessonController::createLesson, Roles.ADMIN);
+            put("/{id}", lessonController::updateLesson, Roles.ADMIN);
+            delete("/{id}", lessonController::deleteLesson, Roles.ADMIN);
+            put("/{lessonId}/instructors/{instructorId}", lessonController::addInstructorToLesson, Roles.USER);
+            post("/populate", lessonController::populate, Roles.USER);
         };
     }
 
