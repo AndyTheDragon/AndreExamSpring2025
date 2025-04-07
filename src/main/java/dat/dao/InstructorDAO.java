@@ -1,12 +1,15 @@
 package dat.dao;
 
 import dat.dto.InstructorDTO;
+import dat.dto.TotalPriceDTO;
 import dat.entities.Instructor;
 import dat.exceptions.DaoException;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.List;
 
 public class InstructorDAO extends GenericDAO
@@ -101,4 +104,34 @@ public class InstructorDAO extends GenericDAO
         // Delete the instructor entity
         super.delete(instructor);
     }
+
+    public Double getTotalSumPriceOfLessonsByInstructor(int instructorId)
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            return em.createQuery("SELECT SUM(l.price) FROM SkiLesson l WHERE l.instructor.id = :instructorId", Double.class)
+                    .setParameter("instructorId", instructorId)
+                    .getSingleResult();
+        }
+        catch (Exception e)
+        {
+            logger.error("Error calculating total sum price of lessons for instructor with ID {}: {}", instructorId, e.getMessage());
+            throw new DaoException("Error calculating total sum price of lessons for instructor with ID " + instructorId, e);
+        }
+    }
+
+    public List<TotalPriceDTO> getTotalSumPriceOfLessonsByInstructor()
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            return em.createQuery("SELECT l.instructor.id, SUM(l.price) FROM SkiLesson l GROUP BY l.instructor.id", TotalPriceDTO.class)
+                    .getResultList();
+        }
+        catch (Exception e)
+        {
+            logger.error("Error calculating total sum price of lessons for instructors: {}", e.getMessage());
+            throw new DaoException("Error calculating total sum price of lessons for instructors", e);
+        }
+    }
+
 }

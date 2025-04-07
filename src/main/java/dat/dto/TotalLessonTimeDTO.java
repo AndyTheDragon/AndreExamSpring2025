@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TotalPriceDTO
+public class TotalLessonTimeDTO
 {
     private Integer instructorId;
-    private Double totalPrice;
+    private Long totalTime;
 }

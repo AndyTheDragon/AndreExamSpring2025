@@ -34,6 +34,10 @@ public class Routes
     {
         return () -> {
             get("/{id}/skilessons", lessonController::getLessonsByInstructor);
+            get("/{id}/totalsumprice", lessonController::getTotalSumPriceOfLessonsByInstructor);
+            get("/totalsumprice", lessonController::getTotalSumPriceOfLessons);
+            get("/{id}/totalsumduration", lessonController::getSumOfLessonTimesByInstructor);
+            get("/totalsumduration", lessonController::getSumOfLessonTimes);
         };
     }
 

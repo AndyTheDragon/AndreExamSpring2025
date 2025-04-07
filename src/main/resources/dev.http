@@ -30,7 +30,7 @@ GET localhost:7070/api/skilessons
 Authorization: Bearer {{token}}
 
 ### Get skiLesson by ID
-GET localhost:7070/api/skilessons/3
+GET localhost:7070/api/skilessons/3?includeInstructions=true
 Authorization: Bearer {{token}}
 
 ### Create new skiLesson
@@ -69,6 +69,18 @@ Authorization: Bearer {{token}}
 
 ### Get skilesson filtered by level
 GET localhost:7070/api/skilessons/level/adVancEd
+Authorization: Bearer {{token}}
+
+### Get lessons offered by instructor
+GET localhost:7070/api/instructors/1/skilessons
+Authorization: Bearer {{token}}
+
+### Get total sum price of lessons offered by instructors
+GET localhost:7070/api/instructors/totalsumprice
+Authorization: Bearer {{token}}
+
+### Get total sum duration of lessons offered by instructors
+GET localhost:7070/api/instructors/totalsumduration
 Authorization: Bearer {{token}}
 
 ### Get skiLesson with Items

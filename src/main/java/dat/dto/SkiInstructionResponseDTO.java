@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ItemsResponseDTO {
-    private List<ItemDTO> items;
+public class SkiInstructionResponseDTO
+{
+    private List<SkiInstructionDTO> lessons;
 }
