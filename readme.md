@@ -1,7 +1,7 @@
-# MockExam2024_fall Project Overview
+# AndreExamSpring2025 Project Overview
 
 ## Introduction
-MockExam2024_fall is a RESTful API application for managing __. It provides endpoints for creating, reading, updating, and deleting ___, as well as user authentication and authorization.
+AndreExamSpring2025 is a RESTful API application for managing ski lessons and instructors. It provides endpoints for creating, reading, updating, and deleting ski lessons and instructors, as well as user authentication and authorization.
 
 ## Project Structure
 The project follows a standard MVC architecture with the following components:
@@ -20,13 +20,13 @@ The project follows a standard MVC architecture with the following components:
 ### Domain Model
 The application manages the following entities:
 
-1. **___**:
-   - Properties: id, name, price, category, startTime, endTime, startPosition
-   - Relationships: Many-to-one with Guide
+1. **SkiLesson**:
+   - Properties: id, name, price, level, startTime, endTime, location
+   - Relationships: Many-to-one with Instructor
 
-2. **___**:
+2. **Instructor**:
    - Properties: id, firstName, lastName, email, phone, yearsOfExperience
-   - Relationships: One-to-many with Trip
+   - Relationships: One-to-many with SkiLesson
 
 3. **UserAccount**:
    - Properties: username, password
@@ -35,16 +35,26 @@ The application manages the following entities:
 ## API Endpoints
 The application provides the following main endpoints:
 
-- **___**:
-    - GET `/api/trips`: Get all trips
-    - GET `/api/trips/{id}`: Get a trip by ID
-    - POST `/api/trips`: Create a new trip
-    - PUT `/api/trips/{id}`: Update a trip
-    - DELETE `/api/trips/{id}`: Delete a trip
+- **SkiLessons**:
+    - GET `/api/skilessons`: Get all ski lessons
+    - GET `/api/skilessons/level/{level}`: Get ski lessons by level
+    - GET `/api/skilessons/{id}`: Get a ski lesson by ID
+    - POST `/api/skilessons`: Create a new ski lesson
+    - PUT `/api/skilessons/{id}`: Update a ski lesson
+    - DELETE `/api/skilessons/{id}`: Delete a ski lesson
+    - PUT `/api/skilessons/{lessonId}/instructors/{instructorId}`: Add an instructor to a ski lesson
+    - POST `/api/skilessons/populate`: Populate the database with ski lessons
+
+- **Instructors**:
+    - GET `/api/instructors/{id}/skilessons`: Get ski lessons by instructor
 
 - **Security**:
+    - GET `/api/auth/test`: Test endpoint
+    - GET `/api/auth/healthcheck`: Health check endpoint
     - POST `/api/auth/login`: Authenticate a user
     - POST `/api/auth/register`: Register a new user
+    - GET `/api/auth/verify`: Verify a token
+    - GET `/api/auth/tokenlifespan`: Get token lifespan
 
 ## Testing
 The project includes unit tests and integration tests using JUnit, RestAssured, and TestContainers. Tests can be run with Maven: `mvn test`
