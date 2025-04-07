@@ -2,8 +2,8 @@ package dat;
 
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
+import dat.controllers.LessonController;
 import dat.controllers.SecurityController;
-import dat.controllers.TripController;
 import dat.routes.Routes;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -15,9 +15,9 @@ public class Main
 
     public static void main(String[] args)
     {
-        TripController tripController = new TripController(emf);
+        LessonController lessonController = new LessonController(emf);
         SecurityController securityController = new SecurityController(emf);
-        Routes routes = new Routes(tripController, securityController);
+        Routes routes = new Routes(lessonController, securityController);
 
         ApplicationConfig
                 .getInstance()

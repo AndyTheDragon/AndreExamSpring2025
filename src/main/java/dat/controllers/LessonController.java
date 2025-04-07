@@ -7,136 +7,129 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dat.dao.TripDAO;
+import dat.dao.SkiLessonDAO;
 import dat.dto.*;
-import dat.enums.TripCategory;
+import dat.enums.LessonLevel;
 import dat.exceptions.ApiException;
 import dat.exceptions.DaoException;
 import dat.utils.DataAPIReader;
 import dat.utils.Populator;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Set;
 
-public class TripController
+public class LessonController
 {
     private final EntityManagerFactory emf;
-    private final TripDAO dao;
-    private final Logger logger = LoggerFactory.getLogger(TripController.class);
+    private final SkiLessonDAO dao;
+    private final Logger logger = LoggerFactory.getLogger(LessonController.class);
 
-    public TripController(EntityManagerFactory emf)
+    public LessonController(EntityManagerFactory emf)
     {
         this.emf = emf;
-        this.dao = new TripDAO(emf);
+        this.dao = new SkiLessonDAO(emf);
     }
 
-    public void getAllTrips(Context ctx)
+    public void getAllLessons(Context ctx)
     {
         try
         {
-            List<TripDTO> trips = dao.getAll();
+            List<SkiLessonDTO> trips = dao.getAll();
             ctx.json(trips);
         } catch (DaoException e)
         {
-            throw new ApiException(404, "Trips not found");
+            logger.error("Error fetching lessons.", e);
+            throw new ApiException(500, "Something went wrong with the database. ", e);
         }
     }
 
-    public void getTripById(Context ctx)
+    public void getLessonById(Context ctx)
     {
         try
         {
             Integer id = ctx.pathParamAsClass("id", Integer.class)
                     .check(i -> i > 0, "ID must be a positive integer")
                     .getOrThrow((validator) -> new IllegalArgumentException("ID must be a positive integer"));
-            logger.info("Trip ID: " + id);
-            Boolean withItems = ctx.queryParamAsClass("withItems", Boolean.class)
-                    .check(p -> p != null, "withItems is missing")
-                    .getOrDefault(false);
-            logger.info("withItems: " + withItems);
-            TripDTO trip = dao.getById(id);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            ObjectNode tripJson = mapper.valueToTree(trip);
-            if (withItems)
-            {
-                List<ItemDTO> items = fetchPackingItems(trip.getCategory());
-                ArrayNode itemsArray = mapper.valueToTree(items);
-                tripJson.set("items", itemsArray);
-            }
-            ctx.json(tripJson);
+            SkiLessonDTO lesson = dao.getById(id);
+            ctx.json(lesson);
         } catch (IllegalArgumentException e)
         {
             logger.error("Illegal argument. ", e);
             throw new ApiException(400, "Invalid ID format", e);
         } catch (DaoException e)
         {
+            logger.error("Error fetching lesson. ", e);
             throw new ApiException(404, "Trip not found", e);
         }
     }
 
-    public void createTrip(Context ctx)
+    public void createLesson(Context ctx)
     {
         try
         {
-            TripInputDTO tripInput = ctx.bodyAsClass(TripInputDTO.class);
-            dao.create(tripInput);
+            SkiLessonDTO lessonInput = ctx.bodyAsClass(SkiLessonDTO.class);
+            dao.create(lessonInput);
             ctx.status(201);
         } catch (IllegalArgumentException | DaoException e)
         {
+            logger.error("Error creating lesson. ", e);
             throw new ApiException(400, "Invalid input data", e);
         }
     }
 
-    public void updateTrip(Context ctx)
+    public void updateLesson(Context ctx)
     {
         try
         {
-            TripInputDTO tripInput = ctx.bodyAsClass(TripInputDTO.class);
+            SkiLessonDTO lessonInput = ctx.bodyAsClass(SkiLessonDTO.class);
             Integer id = ctx.pathParamAsClass("id", Integer.class)
                     .check(i -> i > 0, "ID must be a positive integer")
                     .getOrThrow((validator) -> new IllegalArgumentException("ID must be a positive integer"));
-            TripDTO updatedTrip = dao.update(tripInput, id);
-            ctx.json(updatedTrip);
+            SkiLessonDTO updatedLesson = dao.update(lessonInput, id);
+            ctx.json(updatedLesson);
         } catch (IllegalArgumentException | DaoException e)
         {
+            logger.error("Error updating lesson. ", e);
             throw new ApiException(400, "Invalid input data", e);
         }
     }
 
-    public void deleteTrip(Context ctx)
+    public void deleteLesson(Context ctx)
     {
         try
         {
             Integer id = ctx.pathParamAsClass("id", Integer.class)
                     .check(i -> i > 0, "ID must be a positive integer")
                     .getOrThrow((validator) -> new IllegalArgumentException("ID must be a positive integer"));
-            dao.deleteTrip(id);
+            dao.deleteSkiLesson(id);
             ctx.status(204);
         } catch (IllegalArgumentException | DaoException e)
         {
+            logger.error("Error deleting lesson. ", e);
             throw new ApiException(400, "Invalid ID format", e);
         }
     }
 
-    public void addGuideToTrip(Context ctx)
+    public void addInstructorToLesson(Context ctx)
     {
         try
         {
-            Integer tripId = ctx.pathParamAsClass("tripId", Integer.class)
+            Integer lessonId = ctx.pathParamAsClass("lessonId", Integer.class)
                     .check(i -> i > 0, "ID must be a positive integer")
                     .getOrThrow((validator) -> new IllegalArgumentException("Trip ID must be a positive integer"));
-            Integer guideId = ctx.pathParamAsClass("guideId", Integer.class)
+            Integer instructorId = ctx.pathParamAsClass("instructorId", Integer.class)
                     .check(i -> i > 0, "ID must be a positive integer")
-                    .getOrThrow((validator) -> new IllegalArgumentException("Guide ID must be a positive integer"));
-            dao.addGuideToTrip(tripId, guideId);
+                    .getOrThrow((validator) -> new IllegalArgumentException("Instructor ID must be a positive integer"));
+            dao.addInstructorToSkiLesson(lessonId, instructorId);
             ctx.status(204);
         } catch (IllegalArgumentException | DaoException e)
         {
+            logger.error("addInstructorToLesson failed. ", e);
             throw new ApiException(400, "Invalid input data", e);
         }
     }
@@ -148,40 +141,48 @@ public class TripController
         ctx.status(204);
     }
 
-    public void getByCategory(Context ctx)
+    public void getLessonsByLevel(Context ctx)
     {
         try
         {
-            String category = ctx.queryParamAsClass("category", String.class)
-                    .check(this::isValidTripCategory, "Invalid category")
-                    .getOrThrow((validator) -> new IllegalArgumentException("Category is missing or invalid"));
-            List<TripDTO> trips = dao.getByCategory(category);
+            String level = ctx.pathParamAsClass("level", String.class)
+                    .check(this::isValidLessonLevel, "Invalid level")
+                    .getOrThrow((validator) -> new IllegalArgumentException("Level is missing or invalid"));
+            List<SkiLessonDTO> trips = dao.getByLevel(level);
             ctx.json(trips);
-        } catch (DaoException e)
+        } catch (IllegalArgumentException e)
         {
-            throw new ApiException(404, "No trips found");
+            logger.error("Error getting lessons by level. ", e);
+            throw new ApiException(400, "Invalid level format", e);
         }
     }
 
-    public void getGuidesTotalPrice(Context ctx)
+
+    public void getLessonsByInstructor(Context ctx)
     {
         try
         {
-            List<TotalPriceDTO> totalPriceList = dao.getGuidesTotalPrice();
-            ctx.json(totalPriceList);
+            Integer instructorId = ctx.pathParamAsClass("id", Integer.class)
+                    .check(i -> i > 0, "ID must be a positive integer")
+                    .getOrThrow((validator) -> new IllegalArgumentException("ID must be a positive integer"));
+            Set<SkiLessonDTO> lessons = dao.getSkiLessonsByInstructor(instructorId);
+            ctx.json(lessons);
         }
-        catch (DaoException e)
+        catch (IllegalArgumentException e)
         {
-            throw new ApiException(404, "No total price found");
+            logger.error("Error getting lessons by instructor. ", e);
+            throw new ApiException(400, "Invalid ID format", e);
         }
+
     }
 
-    public List<ItemDTO> fetchPackingItems(TripCategory tripCategory)
+
+    public List<ItemDTO> fetchPackingItems(LessonLevel lessonLevel)
     {
         try
         {
             DataAPIReader dataAPIReader = new DataAPIReader();
-            String url = "https://packingapi.cphbusinessapps.dk/packinglist/" + tripCategory.toString().toLowerCase();
+            String url = "https://packingapi.cphbusinessapps.dk/packinglist/" + lessonLevel.toString().toLowerCase();
             String jsonResponse = dataAPIReader.getDataFromClient(url);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
@@ -196,18 +197,11 @@ public class TripController
         }
     }
 
-    private Long calcWeight(List<ItemDTO> items)
-    {
-        return items.stream()
-                .mapToLong(ItemDTO::getWeightInGrams)
-                .sum();
-    }
-
-    private boolean isValidTripCategory(String category)
+    private boolean isValidLessonLevel(String level)
     {
         try
         {
-            TripCategory.valueOf(category.toUpperCase());
+            LessonLevel.valueOf(level.toUpperCase());
             return true;
         } catch (IllegalArgumentException e)
         {

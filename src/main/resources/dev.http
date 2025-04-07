@@ -22,35 +22,40 @@ POST http://localhost:7070/api/auth/login
 %}
 
 ### Populate data
-POST localhost:7070/api/trips/populate
+POST localhost:7070/api/skilessons/populate
 #Authorization: Bearer {{token}}
 
-### Get all trips
-GET localhost:7070/api/trips
+### Get all skilessons
+GET localhost:7070/api/skilessons
 Authorization: Bearer {{token}}
 
-### Get trip by ID
-GET localhost:7070/api/trips/3
+### Get skiLesson by ID
+GET localhost:7070/api/skilessons/3
 Authorization: Bearer {{token}}
 
-### Create new trip
-POST localhost:7070/api/trips
+### Create new skiLesson
+POST localhost:7070/api/skilessons
 Authorization: Bearer {{token}}
 Content-Type: "application/json"
 
 {
     "name": "Trip to Bilka",
     "price": 802.50,
-    "category": "CITY",
+    "level": "BEGINNER",
     "startTime": "14:30",
-    "endTime": "15:45"
+    "endTime": "15:45",
+    "location": {
+        "description": "Bilka",
+        "latitude": 55.123456,
+        "longitude": 10.123456
+    }
 }
 
-### Add guide to trip
-PUT localhost:7070/api/trips/6/guides/1
+### Add instructor to skiLesson
+PUT localhost:7070/api/skilessons/6/instructors/1
 
-### Update trip
-PUT localhost:7070/api/trips/6
+### Update skiLesson
+PUT localhost:7070/api/skilessons/6
 Authorization: Bearer {{token}}
 Content-Type: "application/json"
 
@@ -58,9 +63,9 @@ Content-Type: "application/json"
     "name": "Trip to the Old City"
 }
 
-### Delete trip
-DELETE localhost:7070/api/trips/1
+### Delete skiLesson
+DELETE localhost:7070/api/skilessons/1
 Authorization: Bearer {{token}}
 
-### Get trip with Items
-GET localhost:7070/api/trips/1/?withItems=true
+### Get skiLesson with Items
+GET localhost:7070/api/skilessons/1/?withItems=true

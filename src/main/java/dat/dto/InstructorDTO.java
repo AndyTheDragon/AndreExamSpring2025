@@ -22,6 +22,7 @@ public class InstructorDTO
 
     public InstructorDTO(Instructor instructor)
     {
+        this.id = instructor.getId();
         this.firstName = instructor.getFirstName();
         this.lastName = instructor.getLastName();
         this.email = instructor.getEmail();

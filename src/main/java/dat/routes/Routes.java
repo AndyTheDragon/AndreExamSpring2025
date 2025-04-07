@@ -2,42 +2,52 @@ package dat.routes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dat.controllers.SecurityController;
-import dat.controllers.TripController;
+import dat.controllers.LessonController;
 import dat.enums.Roles;
 import io.javalin.apibuilder.EndpointGroup;
+import org.jetbrains.annotations.NotNull;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Routes
 {
-    private final TripController tripController;
+    private final LessonController lessonController;
     private final SecurityController securityController;
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public Routes(TripController tripController, SecurityController securityController)
+    public Routes(LessonController lessonController, SecurityController securityController)
     {
-        this.tripController = tripController;
+        this.lessonController = lessonController;
         this.securityController = securityController;
     }
 
     public  EndpointGroup getRoutes()
     {
         return () -> {
-            path("trips", tripRoutes());
+            path("skilessons", lessonRoutes());
+            path("instructors", instructorRoutes());
             path("auth", authRoutes());
         };
     }
 
-    private  EndpointGroup tripRoutes()
+    private EndpointGroup instructorRoutes()
     {
         return () -> {
-            get(tripController::getAllTrips);
-            get("/{id}", tripController::getTripById);
-            post(tripController::createTrip);
-            put("/{id}", tripController::updateTrip);
-            delete("/{id}", tripController::deleteTrip);
-            put("/{tripId}/guides/{guideId}", tripController::addGuideToTrip);
-            post("/populate", tripController::populate);
+            get("/{id}/skilessons", lessonController::getLessonsByInstructor);
+        };
+    }
+
+    private  EndpointGroup lessonRoutes()
+    {
+        return () -> {
+            get(lessonController::getAllLessons);
+            get("/level/{level}", lessonController::getLessonsByLevel);
+            get("/{id}", lessonController::getLessonById);
+            post(lessonController::createLesson);
+            put("/{id}", lessonController::updateLesson);
+            delete("/{id}", lessonController::deleteLesson);
+            put("/{lessonId}/instructors/{instructorId}", lessonController::addInstructorToLesson);
+            post("/populate", lessonController::populate);
         };
     }
 
