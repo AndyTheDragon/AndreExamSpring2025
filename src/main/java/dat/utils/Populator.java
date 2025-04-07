@@ -66,12 +66,12 @@ public class Populator
 
     }
 
-    public List<Instructor> getGuides()
+    public List<Instructor> getInstructors()
     {
         return List.of(instructor1, instructor2);
     }
 
-    public List<SkiLesson> getTrips()
+    public List<SkiLesson> getLessons()
     {
         return List.of(skiLesson1, skiLesson2, skiLesson3, skiLesson4, skiLesson5);
     }

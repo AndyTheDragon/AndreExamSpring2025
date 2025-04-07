@@ -27,7 +27,7 @@ public class Instructor
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "instructor")
     @JsonBackReference
     @ToString.Exclude
-    private Set<SkiLesson> skiLessons = new HashSet<>();
+    private Set<SkiLesson> lessons = new HashSet<>();
 
     public Instructor(InstructorDTO guide)
     {
@@ -43,7 +43,7 @@ public class Instructor
     {
         if (skiLesson != null)
         {
-            skiLessons.add(skiLesson);
+            lessons.add(skiLesson);
             skiLesson.setInstructor(this);
         }
     }
@@ -52,7 +52,7 @@ public class Instructor
     {
         if (skiLesson != null)
         {
-            skiLessons.remove(skiLesson);
+            lessons.remove(skiLesson);
             skiLesson.setInstructor(null);
         }
     }

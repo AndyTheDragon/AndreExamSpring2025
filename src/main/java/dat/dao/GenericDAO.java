@@ -62,6 +62,7 @@ public class GenericDAO implements CrudDAO
             T entity = em.find(type, id);
             if (entity == null)
             {
+                logger.error("No entity found with id {}", id.toString());
                 throw new EntityNotFoundException("No entity found with id " + id.toString());
             }
             return entity;
@@ -78,12 +79,6 @@ public class GenericDAO implements CrudDAO
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            List<T> entities = em.createQuery("SELECT t FROM " + type.getSimpleName() + " t", type).getResultList();
-            if (entities.isEmpty())
-            {
-                logger.error("No entities found in db");
-                throw new EntityNotFoundException("No entities found in db");
-            }
             return em.createQuery("SELECT t FROM " + type.getSimpleName() + " t", type).getResultList();
         }
         catch (Exception e)

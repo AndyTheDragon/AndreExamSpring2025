@@ -1,8 +1,6 @@
 package dat.dao;
 
 import dat.config.HibernateConfig;
-import dat.dto.GuideDTO;
-import dat.dto.TripDTO;
 import dat.entities.*;
 import dat.exceptions.DaoException;
 import dat.utils.Populator;
@@ -20,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenericDAOTest
 {
     private static final EntityManagerFactory emf = HibernateConfig.getEntityManagerFactoryForTest();
-    private static final TripDAO genericDAO = new TripDAO(emf);
-    private static Guide g1, g2;
-    private static Trip t1, t2, t3, t4, t5;
+    private static final GenericDAO dao = new SkiLessonDAO(emf);
+    private static Instructor g1, g2;
+    private static SkiLesson l1, l2, l3, l4, l5;
 
 
     @BeforeEach
@@ -30,13 +28,13 @@ class GenericDAOTest
     {
         Populator populator = new Populator();
         populator.populate(emf);
-        g1 = populator.getGuides().get(0);
-        g2 = populator.getGuides().get(1);
-        t1 = populator.getTrips().get(0);
-        t2 = populator.getTrips().get(1);
-        t3 = populator.getTrips().get(2);
-        t4 = populator.getTrips().get(3);
-        t5 = populator.getTrips().get(4);
+        g1 = populator.getInstructors().get(0);
+        g2 = populator.getInstructors().get(1);
+        l1 = populator.getLessons().get(0);
+        l2 = populator.getLessons().get(1);
+        l3 = populator.getLessons().get(2);
+        l4 = populator.getLessons().get(3);
+        l5 = populator.getLessons().get(4);
     }
 
     @Test
@@ -49,42 +47,42 @@ class GenericDAOTest
     void create()
     {
         // Arrange
-        Guide g3 = new Guide();
-        Trip t6 = new Trip();
+        Instructor g3 = new Instructor();
+        SkiLesson t6 = new SkiLesson();
 
 
         // Act
-        Guide guideResult = genericDAO.create(g3);
-        Trip tripResult = genericDAO.create(t6);
+        Instructor instructorResult = dao.create(g3);
+        SkiLesson skiLessonResult = dao.create(t6);
 
         // Assert
-        assertThat(guideResult, samePropertyValuesAs(g3));
-        assertNotNull(guideResult);
-        assertThat(tripResult, samePropertyValuesAs(t6));
-        assertNotNull(tripResult);
+        assertThat(instructorResult, samePropertyValuesAs(g3));
+        assertNotNull(instructorResult);
+        assertThat(skiLessonResult, samePropertyValuesAs(t6));
+        assertNotNull(skiLessonResult);
         try (EntityManager em = emf.createEntityManager())
         {
-            Guide foundGuide = em.find(Guide.class, guideResult.getId());
-            assertThat(foundGuide, samePropertyValuesAs(g3 ,"trips"));
-            assertNotNull(foundGuide);
-            Trip foundTrip = em.find(Trip.class, tripResult.getId());
-            assertThat(foundTrip, samePropertyValuesAs(t6));
+            Instructor foundInstructor = em.find(Instructor.class, instructorResult.getId());
+            assertThat(foundInstructor, samePropertyValuesAs(g3 ,"trips"));
+            assertNotNull(foundInstructor);
+            SkiLesson foundSkiLesson = em.find(SkiLesson.class, skiLessonResult.getId());
+            assertThat(foundSkiLesson, samePropertyValuesAs(t6));
 
         }
 
     }
 
     @Test
-    void read()
+    void getById()
     {
         // Arrange
-        Guide expected = g1;
+        Instructor expected = g1;
 
         // Act
-        Guide result = genericDAO.getById(Guide.class, g1.getId());
+        Instructor result = dao.getById(Instructor.class, g1.getId());
 
         // Assert
-        assertThat(result, samePropertyValuesAs(expected, "trips"));
+        assertThat(result, samePropertyValuesAs(expected, "lessons"));
         //assertThat(result.getRooms(), containsInAnyOrder(expected.getRooms().toArray()));
     }
 
@@ -94,7 +92,7 @@ class GenericDAOTest
 
 
         // Act
-        DaoException exception = assertThrows(DaoException.class, () -> genericDAO.getById(Guide.class, 1000L));
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(Instructor.class, 1000L));
         //Hotel result = genericDAO.read(Hotel.class, 1000L);
 
         // Assert
@@ -105,16 +103,16 @@ class GenericDAOTest
     void findAll()
     {
         // Arrange
-        List<Guide> expected = List.of(g1, g2);
+        List<Instructor> expected = List.of(g1, g2);
 
         // Act
-        List<Guide> result = genericDAO.getAll(Guide.class);
+        List<Instructor> result = dao.getAll(Instructor.class);
 
         // Assert
         assertNotNull(result);
         assertThat(result.size(), is(2));
-        assertThat(result.get(0), samePropertyValuesAs(expected.get(0), "trips"));
-        assertThat(result.get(1), samePropertyValuesAs(expected.get(1), "trips"));
+        assertThat(result.get(0), samePropertyValuesAs(expected.get(0), "lessons"));
+        assertThat(result.get(1), samePropertyValuesAs(expected.get(1), "lessons"));
     }
 
     @Test
@@ -124,10 +122,10 @@ class GenericDAOTest
         g1.setFirstName("UpdatedName");
 
         // Act
-        Guide result = genericDAO.update(g1);
+        Instructor result = dao.update(g1);
 
         // Assert
-        assertThat(result, samePropertyValuesAs(g1, "trips"));
+        assertThat(result, samePropertyValuesAs(g1, "lessons"));
         //assertThat(result.getRooms(), containsInAnyOrder(h1.getRooms()));
 
     }
@@ -138,30 +136,33 @@ class GenericDAOTest
         // Arrange
         g1.setFirstName("UpdatedName");
         g2.setFirstName( "UpdatedName");
-        List<Guide> testEntities = List.of(g1, g2);
+        List<Instructor> testEntities = List.of(g1, g2);
 
         // Act
-        List<Guide> result = genericDAO.update(testEntities);
+        List<Instructor> result = dao.update(testEntities);
 
         // Assert
         assertNotNull(result);
         assertThat(result.size(), is(2));
-        assertThat(result.get(0), samePropertyValuesAs(g1, "trips"));
-        assertThat(result.get(1), samePropertyValuesAs(g2, "trips"));
+        assertThat(result.get(0), samePropertyValuesAs(g1, "lessons"));
+        assertThat(result.get(1), samePropertyValuesAs(g2, "lessons"));
     }
 
     @Test
     void delete()
     {
+        // Arrange
+        SkiLessonDAO lessonDao = (SkiLessonDAO)dao;
+
         // Act
-        genericDAO.deleteTrip(t1.getId());
+        lessonDao.deleteSkiLesson(l1.getId());
 
         // Assert
         try (EntityManager em = emf.createEntityManager())
         {
-            Long amountInDb = em.createQuery("SELECT COUNT(t) FROM Trip t", Long.class).getSingleResult();
+            Long amountInDb = em.createQuery("SELECT COUNT(t) FROM SkiLesson t", Long.class).getSingleResult();
             assertThat(amountInDb, is(4L));
-            Trip found = em.find(Trip.class, t1.getId());
+            SkiLesson found = em.find(SkiLesson.class, l1.getId());
             assertNull(found);
         }
     }
