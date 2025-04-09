@@ -258,7 +258,7 @@ public class LessonController
                                     Duration::plus)
                     ));
             List<TotalLessonTimeDTO> totalSumList = totalSum.entrySet().stream()
-                    .map(entry -> new TotalLessonTimeDTO(entry.getKey(), entry.getValue().toHours()))
+                    .map(entry -> new TotalLessonTimeDTO(entry.getKey(), entry.getValue().toMinutes()))
                     .toList();
             ctx.json(totalSumList);
         } catch (Exception e)
